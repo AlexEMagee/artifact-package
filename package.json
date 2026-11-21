@@ -1,0 +1,14 @@
+{
+  "name": "artifact-package",
+  "version": "1.0.0",
+  "description": "A package for npm that can create and manage artifacts.",
+  "license": "MIT",
+  "author": "AlexEMagee",
+  "type": "commonjs",
+  "main": "./index.js",
+  "exports": {
+    ".": {
+      "default": "./index.js"
+    }
+  }
+}
