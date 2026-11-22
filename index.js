@@ -91,6 +91,55 @@ class Library {
     getArtifact(categoryTitle, artifactTitle) {
        return this.#validateAndFindCategory(categoryTitle).getArtifact(artifactTitle);
     }
+
+    static fromJSON(jsonString) {
+        const object = JSON.parse(jsonString);
+        const library = new Library();
+
+        if (object === null || typeof object !== "object" || Array.isArray(object)) {
+            throw new Error("Data must be an object.");
+        }
+
+        if (object.schemaVersion !== 1) {
+            throw new Error(`Unsupported schema version "${object.schemaVersion}".`);
+        }
+
+        if(!object.categories || !Array.isArray(object.categories)) {
+            throw new Error(`Data must contain categories array`);
+        }
+
+        object.categories.forEach(category => {
+            if (category === null || typeof category !== "object" || Array.isArray(category)) {
+                throw new Error("Category entry must be an object.");
+            }
+            library.addCategory(category.title);
+            if(!Array.isArray(category.artifacts)) {
+                throw new Error(`Category with title "${category.title}" does not contain an artifacts array.`);
+            }
+            category.artifacts.forEach(artifact => {
+                if (artifact === null || typeof artifact !== "object" || Array.isArray(artifact)) {
+                    throw new Error("Artifact entry must be an object.");
+                }
+                library.addArtifactToCategory(category.title, artifact.title, artifact.type, artifact.snippet);
+            });
+        });
+        return library;
+    }
+
+    toJSON() {
+        let object = {
+            schemaVersion: 1,
+            categories: []
+        };
+        this.#categories.forEach(category => {
+            let _object = {title: category.getTitle(), artifacts: []};
+            category.getArtifacts().forEach(artifact => {
+                _object.artifacts.push(category.getArtifact(artifact));
+            });
+            object.categories.push(_object);
+        });
+        return object;
+    }
 }
 
 class Category {
