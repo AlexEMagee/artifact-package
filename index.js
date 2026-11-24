@@ -11,6 +11,14 @@ class Library {
         this.#categories.push(new Category(title));
     }
 
+    removeCategory(title) {
+        const index = this.#findCategory(title);
+        if(index === -1) {
+            throw new Error(`Category with title "${title}" does not exist.`);
+        }
+        this.#categories.splice(index, 1);
+    }
+
     addArtifactToCategory(categoryTitle, artifactTitle, artifactType, artifactSnippet) {
         this.#validateAndFindCategory(categoryTitle).addArtifact(
             artifactTitle,
